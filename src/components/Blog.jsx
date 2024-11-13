@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import Button from './Button.jsx';
 
-const Blog = ({ blog, blogService }) => {
+const Blog = ({ blog, blogService, onRemove }) => {
     const [isDetailsHidden, setIsDetailsHidden] = useState(true);
     const [likes, setLikes] = useState(blog.likes);
     const [loading, setLoading] = useState(false);
@@ -22,6 +22,19 @@ const Blog = ({ blog, blogService }) => {
         }
     };
 
+    const handleRemove = async (event) => {
+        event.preventDefault();
+
+        try {
+            if (window.confirm(`Are you sure you want to remove the blog "${blog.title}"?`)) {
+                await blogService.remove(blog.id);
+                onRemove(blog.id);
+            }
+        } catch (error) {
+            console.error('Failed to remove blog:', error);
+        }
+    };
+
     return (
         <li className={'border-2 border-slate-600 rounded w-full sm:w-[80%] p-2'}>
             {blog.title} <Button
@@ -31,6 +44,7 @@ const Blog = ({ blog, blogService }) => {
                     <p>{blog.url}</p>
                     <p>likes {likes} <Button onClick={handleLike} disabled={loading}>like</Button></p>
                     <p>{blog.author}</p>
+                    <Button onClick={handleRemove}>remove</Button>
                 </div>
             )}
         </li>

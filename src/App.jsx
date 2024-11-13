@@ -30,9 +30,7 @@ const App = () => {
     }, []);
 
     useEffect(() => {
-        blogService.getAll().then(blogs =>
-            setBlogs(blogs),
-        );
+        blogService.getAll().then(blogs => setBlogs(blogs));
     }, []);
 
     useEffect(() => {
@@ -57,7 +55,6 @@ const App = () => {
         );
     };
 
-
     const addBlogForm = () => (
         <Togglable buttonLabel="add new blog" ref={blogFormRef}>
             <BlogForm
@@ -68,7 +65,6 @@ const App = () => {
                 blogService={blogService}
             />
         </Togglable>
-
     );
 
     const handleLogin = async (event) => {
@@ -83,7 +79,6 @@ const App = () => {
             window.localStorage.setItem('loggedBlogappUser', JSON.stringify(user));
 
             blogService.setToken(user.data.token);
-
 
             setUser(user);
             setUsername('');
@@ -112,8 +107,6 @@ const App = () => {
 
         window.localStorage.removeItem('loggedBlogappUser');
 
-        console.log('triggered log out');
-
         setMessage('You are successfully logged out.');
         setMessageType('success');
         setTimeout(() => {
@@ -124,28 +117,44 @@ const App = () => {
         setUser(null);
     };
 
+    const handleRemoveBlog = (blogId) => {
+        setBlogs(blogs.filter(blog => blog.id !== blogId));
+    };
+
     return (
         <div>
             <Navbar handleLogout={handleLogout} handleLogin={handleLogin} user={user} loginService={loginService}
                     blogService={blogService} setMessage={setMessage} setMessageType={setMessageType} />
             {message && <Notification message={message} messageType={messageType} />}
             <h2>blogs</h2>
-            {!user ? <div>
-                <h2 className={'text-3xl'}>Login</h2>
-                {loginForm()}
-            </div> : <div>
-                <p>{user.data.name} logged in <Button onClick={handleLogout}>log out</Button></p>
-                <h2>create new</h2>
-                {addBlogForm()}
-            </div>}
+            {!user ? (
+                <div>
+                    <h2 className={'text-3xl'}>Login</h2>
+                    {loginForm()}
+                </div>
+            ) : (
+                <div>
+                    <p>{user.data.name} logged in <Button onClick={handleLogout}>log out</Button></p>
+                    <h2>create new</h2>
+                    {addBlogForm()}
+                </div>
+            )}
 
             <br />
 
             <ul className={'flex flex-col gap-4 items-center'}>
-                {blogs && blogs.map(blog =>
-                    <Blog key={blog.id} blog={blog} blogService={blogService} />,
-                )}
+                {blogs && blogs
+                    .sort((a, b) => b.likes - a.likes)
+                    .map(blog => (
+                        <Blog
+                            key={blog.id}
+                            blog={blog}
+                            blogService={blogService}
+                            onRemove={handleRemoveBlog}
+                        />
+                    ))}
             </ul>
+
             <Footer />
         </div>
     );

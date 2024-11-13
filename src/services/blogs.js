@@ -29,6 +29,18 @@ const create = async newObject => {
     return request.data;
 };
 
+const remove = async (id) => {
+
+    const user = JSON.parse(localStorage.getItem('loggedBlogappUser'));
+
+    const config = {
+        headers: { Authorization: `Bearer ${user.data.token}` },
+    }
+
+    const request = await axios.delete(`${baseUrl}/${id}`, config);
+    return request.data;
+}
+
 const updateLikes = async (id, newLikes) => {
     const updatedBlog = { likes: newLikes };
 
@@ -42,4 +54,4 @@ const updateLikes = async (id, newLikes) => {
     return request.data;
 };
 
-export default { getAll, setToken, create, updateLikes };
+export default { getAll, setToken, create, updateLikes, remove };
