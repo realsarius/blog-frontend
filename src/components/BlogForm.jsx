@@ -42,22 +42,25 @@ const BlogForm = ({ blogs, blogService, setBlogs, setMessage, setMessageType }) 
     return (
         <form onSubmit={addBlog} className="space-y-4 p-6 rounded-lg shadow-md bg-base-200">
             <div className="form-control">
-                <label className="label">
+                <label className="label" htmlFor="title">
                     <span className="label-text">Title</span>
                 </label>
                 <input
+                    id="title"
                     type="text"
                     value={title}
+                    placeholder={'Blog Title'}
                     onChange={(e) => setTitle(e.target.value)}
                     className="input input-bordered w-full"
                 />
             </div>
 
             <div className="form-control">
-                <label className="label">
+                <label className="label" htmlFor="author">
                     <span className="label-text">Author</span>
                 </label>
                 <input
+                    id="author"
                     type="text"
                     value={author}
                     onChange={(e) => setAuthor(e.target.value)}
@@ -66,10 +69,11 @@ const BlogForm = ({ blogs, blogService, setBlogs, setMessage, setMessageType }) 
             </div>
 
             <div className="form-control">
-                <label className="label">
+                <label className="label" htmlFor="url">
                     <span className="label-text">URL</span>
                 </label>
                 <input
+                    id="url"
                     type="text"
                     value={url}
                     onChange={(e) => setUrl(e.target.value)}

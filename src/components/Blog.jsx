@@ -36,9 +36,9 @@ const Blog = ({ blog, blogService, onRemove }) => {
     };
 
     return (
-        <li className={'border-2 border-slate-600 rounded w-full sm:w-[80%] p-2'}>
-            {blog.title} <Button
-            onClick={() => setIsDetailsHidden(!isDetailsHidden)}>{isDetailsHidden ? 'show' : 'hide'}</Button>
+        <li className={'blog border-2 border-slate-600 rounded w-full sm:w-[80%] p-2'}>
+            {blog.title} <Button className={'showDetailsBtn btn'}
+                                 onClick={() => setIsDetailsHidden(!isDetailsHidden)}>{isDetailsHidden ? 'show' : 'hide'}</Button>
             {!isDetailsHidden && (
                 <div className={'p-4'}>
                     <p>{blog.url}</p>
