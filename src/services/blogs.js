@@ -35,11 +35,11 @@ const remove = async (id) => {
 
     const config = {
         headers: { Authorization: `Bearer ${user.data.token}` },
-    }
+    };
 
     const request = await axios.delete(`${baseUrl}/${id}`, config);
     return request.data;
-}
+};
 
 const updateLikes = async (id, newLikes) => {
     const updatedBlog = { likes: newLikes };

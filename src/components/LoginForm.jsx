@@ -26,6 +26,7 @@ const LoginForm = ({
                         Username
                         <input type="text"
                                value={username}
+                               data-testid="username"
                                onChange={handleUsernameChange}
                                className="grow"
                                placeholder="" />
@@ -46,12 +47,13 @@ const LoginForm = ({
                         Password
                         <input type="password"
                                value={password}
+                               data-testid="password"
                                onChange={handlePasswordChange}
                                className="grow"
                                placeholder="" />
                     </label>
                 </div>
-                <Button type={'submit'}>logins</Button>
+                <Button type={'submit'}>login</Button>
             </form>
         </div>
     );

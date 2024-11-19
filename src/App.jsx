@@ -32,7 +32,7 @@ const App = () => {
     useEffect(() => {
         blogService.getAll().then(blogs => setBlogs(blogs));
     }, []);
-
+    
     useEffect(() => {
         if (message) {
             console.log('Message set:', message);
@@ -89,7 +89,7 @@ const App = () => {
             setTimeout(() => {
                 setMessage('');
                 setMessageType('');
-            }, 5000);
+            }, 3000);
 
         } catch (error) {
             const errorMsg = error.response?.data?.error || error.message || 'Unknown error occurred';

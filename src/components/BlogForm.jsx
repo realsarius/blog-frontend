@@ -49,6 +49,7 @@ const BlogForm = ({ blogs, blogService, setBlogs, setMessage, setMessageType }) 
                     id="title"
                     type="text"
                     value={title}
+                    data-testid="blog-title"
                     placeholder={'Blog Title'}
                     onChange={(e) => setTitle(e.target.value)}
                     className="input input-bordered w-full"
@@ -63,6 +64,7 @@ const BlogForm = ({ blogs, blogService, setBlogs, setMessage, setMessageType }) 
                     id="author"
                     type="text"
                     value={author}
+                    data-testid="blog-author"
                     onChange={(e) => setAuthor(e.target.value)}
                     className="input input-bordered w-full"
                 />
@@ -76,6 +78,7 @@ const BlogForm = ({ blogs, blogService, setBlogs, setMessage, setMessageType }) 
                     id="url"
                     type="text"
                     value={url}
+                    data-testid="blog-url"
                     onChange={(e) => setUrl(e.target.value)}
                     className="input input-bordered w-full"
                 />
