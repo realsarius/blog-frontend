@@ -35,16 +35,20 @@ const Blog = ({ blog, blogService, onRemove }) => {
         }
     };
 
+    // console.log(JSON.parse(localStorage.getItem('loggedBlogappUser')).data.name);
+
     return (
         <li className={'blog border-2 border-slate-600 rounded w-full sm:w-[80%] p-2'}>
-            {blog.title} <Button className={'showDetailsBtn btn'}
-                                 onClick={() => setIsDetailsHidden(!isDetailsHidden)}>{isDetailsHidden ? 'show' : 'hide'}</Button>
+            <span>{blog.title}</span> <Button className={'showDetailsBtn btn'}
+                                              onClick={() => setIsDetailsHidden(!isDetailsHidden)}>{isDetailsHidden ? 'show' : 'hide'}</Button>
             {!isDetailsHidden && (
                 <div className={'p-4'}>
                     <p>{blog.url}</p>
                     <p>likes {likes} <Button onClick={handleLike} disabled={loading}>like</Button></p>
                     <p>{blog.author}</p>
-                    <Button onClick={handleRemove}>remove</Button>
+                    {JSON.parse(localStorage.getItem('loggedBlogappUser')).data.name === blog.author &&
+                        <Button onClick={handleRemove}>remove</Button>}
+                    {/*<Button onClick={handleRemove}>remove</Button>*/}
                 </div>
             )}
         </li>

@@ -1,6 +1,6 @@
 import Button from './Button.jsx';
 
-const Navbar = ({handleLogout, user}) => {
+const Navbar = ({ handleLogout, user }) => {
 
     return (
         <div className="navbar bg-base-100">

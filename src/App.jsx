@@ -32,7 +32,7 @@ const App = () => {
     useEffect(() => {
         blogService.getAll().then(blogs => setBlogs(blogs));
     }, []);
-    
+
     useEffect(() => {
         if (message) {
             console.log('Message set:', message);
@@ -63,6 +63,7 @@ const App = () => {
                 setMessageType={setMessageType}
                 blogs={blogs}
                 blogService={blogService}
+                blogFormRef={blogFormRef}
             />
         </Togglable>
     );
@@ -84,7 +85,7 @@ const App = () => {
             setUsername('');
             setPassword('');
 
-            setMessage('You are logged in!');
+            setMessage(`Logged in as ${user.data.name}`);
             setMessageType('success');
             setTimeout(() => {
                 setMessage('');
@@ -98,7 +99,7 @@ const App = () => {
             setTimeout(() => {
                 setMessage('');
                 setMessageType('');
-            }, 5000);
+            }, 3000);
         }
     };
 
@@ -112,7 +113,7 @@ const App = () => {
         setTimeout(() => {
             setMessage('');
             setMessageType('');
-        }, 5000);
+        }, 3000);
 
         setUser(null);
     };

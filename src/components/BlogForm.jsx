@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import Button from './Button.jsx';
 
-const BlogForm = ({ blogs, blogService, setBlogs, setMessage, setMessageType }) => {
+const BlogForm = ({ blogs, blogService, setBlogs, setMessage, setMessageType, blogFormRef }) => {
     const [title, setTitle] = useState('');
     const [author, setAuthor] = useState('');
     const [url, setUrl] = useState('');
@@ -26,7 +26,12 @@ const BlogForm = ({ blogs, blogService, setBlogs, setMessage, setMessageType }) 
                 setTimeout(() => {
                     setMessage('');
                     setMessageType('');
-                }, 5000);
+                }, 3000);
+
+                if (blogFormRef.current) {
+                    blogFormRef.current.toggleVisibility();
+                }
+
             })
             .catch(error => {
                 setMessage(`error: ${error}`);
@@ -34,7 +39,7 @@ const BlogForm = ({ blogs, blogService, setBlogs, setMessage, setMessageType }) 
                 setTimeout(() => {
                     setMessage('');
                     setMessageType('');
-                }, 5000);
+                }, 3000);
             });
 
     };
