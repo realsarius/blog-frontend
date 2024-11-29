@@ -1,7 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
 import Blog from './components/Blog';
-import blogService from './services/blogs';
-import loginService from './services/login';
 import Notification from './components/Notification.jsx';
 import Footer from './components/Footer.jsx';
 import LoginForm from './components/LoginForm.jsx';
@@ -9,35 +8,33 @@ import Togglable from './components/Togglable.jsx';
 import Button from './components/Button.jsx';
 import BlogForm from './components/BlogForm.jsx';
 import Navbar from './components/Navbar.jsx';
+import { notify } from './reducers/notificationSlice.js';
+import { fetchBlogs, removeBlog, sortBlogs } from './reducers/blogSlice.js';
+import { loadUserFromLocalStorage, loginUser, logoutUserThunk } from './reducers/userSlice.js';  // Import removeBlog action
 
 const App = () => {
-    const [blogs, setBlogs] = useState([]);
+    const dispatch = useDispatch();
+
+    const blogs = useSelector((state) => state.blogs.blogs);
+    const blogStatus = useSelector((state) => state.blogs.status);
+    const error = useSelector((state) => state.blogs.error);
+
+    const user = useSelector((state) => state.user.user);
+
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
-    const [message, setMessage] = useState('');
-    const [messageType, setMessageType] = useState('');
-    const [user, setUser] = useState(null);
 
     const blogFormRef = useRef();
 
     useEffect(() => {
-        const loggedUserJSON = window.localStorage.getItem('loggedBlogappUser');
-        if (loggedUserJSON) {
-            const user = JSON.parse(loggedUserJSON);
-            setUser(user);
-            blogService.setToken(user.token);
-        }
-    }, []);
+        dispatch(loadUserFromLocalStorage());
+    }, [dispatch]);
 
     useEffect(() => {
-        blogService.getAll().then(blogs => setBlogs(blogs));
-    }, []);
-
-    useEffect(() => {
-        if (message) {
-            console.log('Message set:', message);
+        if (blogStatus === 'idle') {
+            dispatch(fetchBlogs());
         }
-    }, [message]);
+    }, [dispatch, blogStatus]);
 
     const loginForm = () => {
         return (
@@ -58,11 +55,7 @@ const App = () => {
     const addBlogForm = () => (
         <Togglable buttonLabel="add new blog" ref={blogFormRef}>
             <BlogForm
-                setBlogs={setBlogs}
-                setMessage={setMessage}
-                setMessageType={setMessageType}
                 blogs={blogs}
-                blogService={blogService}
                 blogFormRef={blogFormRef}
             />
         </Togglable>
@@ -72,61 +65,36 @@ const App = () => {
         event.preventDefault();
 
         try {
-            const user = await loginService.login({
-                username,
-                password,
-            });
+            const loggedInUser = await dispatch(loginUser({ username, password })).unwrap();
 
-            window.localStorage.setItem('loggedBlogappUser', JSON.stringify(user));
-
-            blogService.setToken(user.data.token);
-
-            setUser(user);
             setUsername('');
             setPassword('');
 
-            setMessage(`Logged in as ${user.data.name}`);
-            setMessageType('success');
-            setTimeout(() => {
-                setMessage('');
-                setMessageType('');
-            }, 3000);
-
+            dispatch(notify(`Logged in as ${loggedInUser.name}`, 'success'));
         } catch (error) {
-            const errorMsg = error.response?.data?.error || error.message || 'Unknown error occurred';
-            setMessage(errorMsg);
-            setMessageType('error');
-            setTimeout(() => {
-                setMessage('');
-                setMessageType('');
-            }, 3000);
+            const errorMsg = error.message || 'Unknown error occurred';
+            dispatch(notify(errorMsg, 'error'));
         }
     };
 
     const handleLogout = (event) => {
         event.preventDefault();
 
-        window.localStorage.removeItem('loggedBlogappUser');
-
-        setMessage('You are successfully logged out.');
-        setMessageType('success');
-        setTimeout(() => {
-            setMessage('');
-            setMessageType('');
-        }, 3000);
-
-        setUser(null);
+        dispatch(logoutUserThunk());
     };
 
     const handleRemoveBlog = (blogId) => {
-        setBlogs(blogs.filter(blog => blog.id !== blogId));
+        dispatch(removeBlog(blogId));
+    };
+
+    const handleSortBlogs = () => {
+        dispatch(sortBlogs());
     };
 
     return (
         <div>
-            <Navbar handleLogout={handleLogout} handleLogin={handleLogin} user={user} loginService={loginService}
-                    blogService={blogService} setMessage={setMessage} setMessageType={setMessageType} />
-            {message && <Notification message={message} messageType={messageType} />}
+            {/*<Navbar handleLogout={handleLogout} handleLogin={handleLogin} user={user} loginService={loginService}*/}
+            <Notification />
             <h2>blogs</h2>
             {!user ? (
                 <div>
@@ -135,7 +103,7 @@ const App = () => {
                 </div>
             ) : (
                 <div>
-                    <p>{user.data.name} logged in <Button onClick={handleLogout}>log out</Button></p>
+                    <p>{user.name} logged in <Button onClick={handleLogout}>log out</Button></p>
                     <h2>create new</h2>
                     {addBlogForm()}
                 </div>
@@ -143,18 +111,24 @@ const App = () => {
 
             <br />
 
-            <ul className={'flex flex-col gap-4 items-center'}>
-                {blogs && blogs
-                    .sort((a, b) => b.likes - a.likes)
-                    .map(blog => (
-                        <Blog
-                            key={blog.id}
-                            blog={blog}
-                            blogService={blogService}
-                            onRemove={handleRemoveBlog}
-                        />
-                    ))}
-            </ul>
+            {blogStatus === 'loading' ? (
+                <p>Loading blogs...</p>
+            ) : blogStatus === 'failed' ? (
+                <p>{error}</p>
+            ) : (
+                <>
+                    <Button onClick={handleSortBlogs}>Sort Blogs</Button>
+                    <ul className={'flex flex-col gap-4 items-center'}>
+                        {blogs.map(blog => (
+                            <Blog
+                                key={blog.id}
+                                blog={blog}
+                                onRemove={handleRemoveBlog}
+                            />
+                        ))}
+                    </ul>
+                </>
+            )}
 
             <Footer />
         </div>

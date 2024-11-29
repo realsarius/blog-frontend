@@ -1,37 +1,38 @@
 import { useState } from 'react';
 import Button from './Button.jsx';
+import { useDispatch } from 'react-redux';
+import { removeBlog, sortBlogs, updateBlogLikes } from '../reducers/blogSlice';
 
-const Blog = ({ blog, blogService, onRemove }) => {
+const Blog = ({ blog }) => {
+    const dispatch = useDispatch();
+
     const [isDetailsHidden, setIsDetailsHidden] = useState(true);
-    const [likes, setLikes] = useState(blog.likes);
     const [loading, setLoading] = useState(false);
 
-    const handleLike = async (event) => {
-        event.preventDefault();
-
-        const newLikes = likes + 1;
-
+    const handleLike = async () => {
         try {
             setLoading(true);
-            await blogService.updateLikes(blog.id, newLikes);
-            setLikes(newLikes);
+            await dispatch(updateBlogLikes({ id: blog.id, likes: blog.likes + 1 })).unwrap();
+            dispatch(sortBlogs());
         } catch (error) {
-            console.error('Failed to update likes:', error);
+            console.error('Error updating likes:', error);
         } finally {
             setLoading(false);
         }
     };
 
-    const handleRemove = async (event) => {
-        event.preventDefault();
 
-        try {
-            if (window.confirm(`Are you sure you want to remove the blog "${blog.title}"?`)) {
-                await blogService.remove(blog.id);
-                onRemove(blog.id);
+    const handleRemove = async () => {
+        if (window.confirm(`Are you sure you want to remove the blog "${blog.title}"?`)) {
+            try {
+                setLoading(true);
+                await dispatch(removeBlog(blog.id)).unwrap();
+                dispatch(sortBlogs());
+            } catch (error) {
+                console.error('Failed to remove blog:', error);
+            } finally {
+                setLoading(false);
             }
-        } catch (error) {
-            console.error('Failed to remove blog:', error);
         }
     };
 
@@ -44,11 +45,10 @@ const Blog = ({ blog, blogService, onRemove }) => {
             {!isDetailsHidden && (
                 <div className={'p-4'}>
                     <p>{blog.url}</p>
-                    <p>likes {likes} <Button onClick={handleLike} disabled={loading}>like</Button></p>
+                    <p>likes {blog.likes} <Button onClick={handleLike} disabled={loading}>like</Button></p>
                     <p>{blog.author}</p>
                     {JSON.parse(localStorage.getItem('loggedBlogappUser')).data.name === blog.author &&
                         <Button onClick={handleRemove}>remove</Button>}
-                    {/*<Button onClick={handleRemove}>remove</Button>*/}
                 </div>
             )}
         </li>

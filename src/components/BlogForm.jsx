@@ -1,12 +1,17 @@
 import { useState } from 'react';
 import Button from './Button.jsx';
+import { useDispatch } from 'react-redux';
+import { notify } from '../reducers/notificationSlice.js';
+import { createBlog } from '../reducers/blogSlice.js';
 
-const BlogForm = ({ blogs, blogService, setBlogs, setMessage, setMessageType, blogFormRef }) => {
+const BlogForm = ({ blogFormRef }) => {
     const [title, setTitle] = useState('');
     const [author, setAuthor] = useState('');
     const [url, setUrl] = useState('');
 
-    const addBlog = (event) => {
+    const dispatch = useDispatch();
+
+    const addBlog = async (event) => {
         event.preventDefault();
 
         const blogObject = {
@@ -15,33 +20,23 @@ const BlogForm = ({ blogs, blogService, setBlogs, setMessage, setMessageType, bl
             url,
         };
 
-        blogService.create(blogObject)
-            .then(returnedBlog => {
-                setBlogs(blogs.concat(returnedBlog));
-                setTitle('');
-                setAuthor('');
-                setUrl('');
-                setMessage(`a new blog ${returnedBlog.title} by ${returnedBlog.author} added`);
-                setMessageType('success');
-                setTimeout(() => {
-                    setMessage('');
-                    setMessageType('');
-                }, 3000);
+        try {
+            const returnedBlog = await dispatch(createBlog(blogObject)).unwrap();
 
-                if (blogFormRef.current) {
-                    blogFormRef.current.toggleVisibility();
-                }
+            dispatch(notify(`A new blog "${returnedBlog.title}" by ${returnedBlog.author} added`, 'success'));
 
-            })
-            .catch(error => {
-                setMessage(`error: ${error}`);
-                setMessageType('error');
-                setTimeout(() => {
-                    setMessage('');
-                    setMessageType('');
-                }, 3000);
-            });
+            setTitle('');
+            setAuthor('');
+            setUrl('');
 
+            if (blogFormRef.current) {
+                blogFormRef.current.toggleVisibility();
+            }
+
+        } catch (error) {
+
+            dispatch(notify(`Error: ${error.message}`, 'error'));
+        }
     };
 
     return (
