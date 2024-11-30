@@ -2,6 +2,20 @@ import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import loginService from '../services/login';
 import { notify } from './notificationSlice.js';
 import blogService from '../services/blogs';
+import userService from '../services/users';
+
+export const fetchUsers = createAsyncThunk(
+    'user/fetchUsers',
+    async () => {
+        const users = await userService.getAll();
+        return users;
+    },
+);
+
+export const fetchUserById = createAsyncThunk('user/fetchUserById', async (userId) => {
+    const response = await blogService.getUserById(userId); // Assuming this endpoint exists
+    return response;
+});
 
 export const loadUserFromLocalStorage = createAsyncThunk(
     'user/loadUserFromLocalStorage',
@@ -12,10 +26,11 @@ export const loadUserFromLocalStorage = createAsyncThunk(
 
             blogService.setToken(user.token);
 
-            dispatch(setUser(user.data));
+            dispatch(setUser(user));
 
             return user;
         }
+        return null;
     },
 );
 
@@ -45,6 +60,7 @@ const userSlice = createSlice({
     name: 'user',
     initialState: {
         user: null,
+        users: [],
         status: 'idle',
         error: null,
     },
@@ -73,6 +89,32 @@ const userSlice = createSlice({
             })
             .addCase(logoutUserThunk.fulfilled, (state) => {
                 state.user = null;
+            })
+            .addCase(fetchUsers.pending, (state) => {
+                state.status = 'loading';
+            })
+            .addCase(fetchUsers.fulfilled, (state, action) => {
+                state.status = 'succeeded';
+                state.users = action.payload;
+            })
+            .addCase(fetchUsers.rejected, (state, action) => {
+                state.status = 'failed';
+                state.error = action.error.message;
+            })
+            .addCase(fetchUserById.pending, (state) => {
+                state.status = 'loading';
+            })
+            .addCase(fetchUserById.fulfilled, (state, action) => {
+                state.status = 'succeeded';
+                // Ensure that the user data is added to the users array
+                const existingUser = state.users.find((user) => user.id === action.payload.id);
+                if (!existingUser) {
+                    state.users.push(action.payload);
+                }
+            })
+            .addCase(fetchUserById.rejected, (state, action) => {
+                state.status = 'failed';
+                state.error = action.error.message;
             });
     },
 });

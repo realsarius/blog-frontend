@@ -21,7 +21,7 @@ const create = async newObject => {
     const user = JSON.parse(localStorage.getItem('loggedBlogappUser'));
 
     const config = {
-        headers: { Authorization: `Bearer ${user.data.token}` },
+        headers: { Authorization: `Bearer ${user.token}` },
     };
 
     const request = await axios.post(baseUrl, newObject, config);
@@ -34,7 +34,7 @@ const remove = async (id) => {
     const user = JSON.parse(localStorage.getItem('loggedBlogappUser'));
 
     const config = {
-        headers: { Authorization: `Bearer ${user.data.token}` },
+        headers: { Authorization: `Bearer ${user.token}` },
     };
 
     const request = await axios.delete(`${baseUrl}/${id}`, config);
@@ -47,7 +47,7 @@ const updateLikes = async (id, newLikes) => {
     const user = JSON.parse(localStorage.getItem('loggedBlogappUser'));
 
     const config = {
-        headers: { Authorization: `Bearer ${user.data.token}` },
+        headers: { Authorization: `Bearer ${user.token}` },
     };
 
     const request = await axios.put(`${baseUrl}/${id}`, updatedBlog, config);
