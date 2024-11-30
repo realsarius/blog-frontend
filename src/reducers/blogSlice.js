@@ -48,12 +48,6 @@ const blogSlice = createSlice({
         error: null,
     },
     reducers: {
-        setBlogs: (state, action) => {
-            state.blogs = action.payload;
-        },
-        addBlog: (state, action) => {
-            state.blogs.push(action.payload);
-        },
         sortBlogs: (state) => {
             state.blogs = [...state.blogs].sort((a, b) => b.likes - a.likes);
         },
@@ -95,6 +89,6 @@ const blogSlice = createSlice({
     },
 });
 
-export const { setBlogs, addBlog, sortBlogs } = blogSlice.actions;
+export const { sortBlogs } = blogSlice.actions;
 
 export default blogSlice.reducer;

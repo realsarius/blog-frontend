@@ -2,12 +2,17 @@ import { useState } from 'react';
 import Button from './Button.jsx';
 import { useDispatch } from 'react-redux';
 import { removeBlog, sortBlogs, updateBlogLikes } from '../reducers/blogSlice';
+import { useLocation } from 'react-router-dom';
 
 const Blog = ({ blog }) => {
     const dispatch = useDispatch();
 
     const [isDetailsHidden, setIsDetailsHidden] = useState(true);
     const [loading, setLoading] = useState(false);
+
+    const location = useLocation();
+
+    const isInUserRoute = location.pathname.startsWith('/users/');
 
     const handleLike = async () => {
         try {
@@ -36,8 +41,6 @@ const Blog = ({ blog }) => {
         }
     };
 
-    // console.log(JSON.parse(localStorage.getItem('loggedBlogappUser')).data.name);
-
     return (
         <li className={'blog border-2 border-slate-600 rounded w-full sm:w-[80%] p-2'}>
             <span>{blog.title}</span> <Button className={'showDetailsBtn btn'}
@@ -47,8 +50,9 @@ const Blog = ({ blog }) => {
                     <p>{blog.url}</p>
                     <p>likes {blog.likes} <Button onClick={handleLike} disabled={loading}>like</Button></p>
                     <p>{blog.author}</p>
-                    {JSON.parse(localStorage.getItem('loggedBlogappUser')).data.name === blog.author &&
-                        <Button onClick={handleRemove}>remove</Button>}
+                    {isInUserRoute && (
+                        <Button onClick={handleRemove}>remove</Button>
+                    )}
                 </div>
             )}
         </li>
