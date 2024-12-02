@@ -17,6 +17,16 @@ const getAll = () => {
     return request.then(response => response.data);
 };
 
+const getOne = async (id) => {
+    const config = {
+        headers: { Authorization: token },
+    };
+
+    const request = axios.get(`${baseUrl}/${id}`, config);
+    return request.then(response => response.data);
+};
+
+
 const create = async newObject => {
     const user = JSON.parse(localStorage.getItem('loggedBlogappUser'));
 
@@ -54,4 +64,20 @@ const updateLikes = async (id, newLikes) => {
     return request.data;
 };
 
-export default { getAll, setToken, create, updateLikes, remove };
+const createComment = async (blogId, commentText) => {
+    const user = JSON.parse(localStorage.getItem('loggedBlogappUser'));
+
+    const config = {
+        headers: { Authorization: `Bearer ${user.token}` },
+    };
+
+    const request = await axios.post(
+        `${baseUrl}/${blogId}/comments`,
+        { text: commentText },
+        config,
+    );
+
+    return request.data;
+};
+
+export default { getAll, setToken, create, updateLikes, remove, getOne, createComment };

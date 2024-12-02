@@ -3,7 +3,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { fetchUsers } from '../reducers/userSlice.js';
 import { Link } from 'react-router-dom';
 
-const Users = () => {
+const UsersPage = () => {
     const dispatch = useDispatch();
     const users = useSelector((state) => state.user.users);
     const status = useSelector((state) => state.user.status);
@@ -22,7 +22,7 @@ const Users = () => {
                 <tr>
                     <th>#</th>
                     <th>Name</th>
-                    <th>Blogs</th>
+                    <th>Blogs Created</th>
                     <th>Role</th>
                 </tr>
                 </thead>
@@ -45,4 +45,4 @@ const Users = () => {
     );
 };
 
-export default Users;
+export default UsersPage;

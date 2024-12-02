@@ -3,7 +3,7 @@ import userEvent from '@testing-library/user-event';
 import Blog from './Blog.jsx';
 import { vi } from 'vitest';
 
-describe('Blog component', () => {
+describe('BlogDetailsPage component', () => {
     const blog = {
         id: '1',
         title: 'My test blog title',

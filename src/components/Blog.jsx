@@ -2,7 +2,7 @@ import { useState } from 'react';
 import Button from './Button.jsx';
 import { useDispatch } from 'react-redux';
 import { removeBlog, sortBlogs, updateBlogLikes } from '../reducers/blogSlice';
-import { useLocation } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
 
 const Blog = ({ blog }) => {
     const dispatch = useDispatch();
@@ -43,18 +43,20 @@ const Blog = ({ blog }) => {
 
     return (
         <li className={'blog border-2 border-slate-600 rounded w-full sm:w-[80%] p-2'}>
-            <span>{blog.title}</span> <Button className={'showDetailsBtn btn'}
-                                              onClick={() => setIsDetailsHidden(!isDetailsHidden)}>{isDetailsHidden ? 'show' : 'hide'}</Button>
-            {!isDetailsHidden && (
-                <div className={'p-4'}>
-                    <p>{blog.url}</p>
-                    <p>likes {blog.likes} <Button onClick={handleLike} disabled={loading}>like</Button></p>
-                    <p>{blog.author}</p>
-                    {isInUserRoute && (
-                        <Button onClick={handleRemove}>remove</Button>
-                    )}
-                </div>
-            )}
+            <span className={'text-xl font-semibold'}><Link to={`/blogs/${blog.id}`}>{blog.title}</Link></span>
+            {/*<Button*/}
+            {/*    className={'showDetailsBtn btn'}*/}
+            {/*    onClick={() => setIsDetailsHidden(!isDetailsHidden)}>{isDetailsHidden ? 'show' : 'hide'}</Button>*/}
+            {/*{!isDetailsHidden && (*/}
+            {/*    <div className={'p-4'}>*/}
+            {/*        <p>{blog.url}</p>*/}
+            {/*        <p>likes {blog.likes} <Button onClick={handleLike} disabled={loading}>like</Button></p>*/}
+            {/*        <p>added by {blog.author}</p>*/}
+            {/*        {isInUserRoute && (*/}
+            {/*            <Button onClick={handleRemove}>remove</Button>*/}
+            {/*        )}*/}
+            {/*    </div>*/}
+            {/*)}*/}
         </li>
     );
 };

@@ -4,10 +4,10 @@ import { useParams } from 'react-router-dom';
 import { fetchUserById } from '../reducers/userSlice';
 import Blog from '../components/Blog';
 
-const User = () => {
+const UserPage = () => {
     const { userId } = useParams();
     const dispatch = useDispatch();
-    const user = useSelector((state) => state.user.users.find((u) => u.id === userId)); // Fetch the user from Redux state
+    const user = useSelector((state) => state.user.users.find((u) => u.id === userId));
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
@@ -23,9 +23,9 @@ const User = () => {
 
     return (
         <div className="user-page">
-            <h1>{user.name}'s Profile</h1>
-            <p>Role: {user.role || 'User'}</p>
-            <h2>Blogs:</h2>
+            <h1 className={'text-2xl font-semibold'}>{user.name}</h1>
+            <p>Role: {user.role || 'UserPage'}</p>
+            <h2>added blogs</h2>
             <ul className={'flex flex-col gap-4 items-center'}>
                 {user.blogs && user.blogs.length > 0 ? (
                     user.blogs.map((blog) => <Blog key={blog.id} blog={blog} />)
@@ -37,4 +37,4 @@ const User = () => {
     );
 };
 
-export default User;
+export default UserPage;

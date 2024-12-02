@@ -30,10 +30,10 @@ test('<BlogForm /> calls blogService.create and updates state', async () => {
 
     const user = userEvent.setup();
 
-    const titleInput = screen.getByPlaceholderText('Blog Title');
+    const titleInput = screen.getByPlaceholderText('BlogDetailsPage Title');
     const authorInput = screen.getByLabelText('Author');
     const urlInput = screen.getByLabelText('URL');
-    const sendButton = screen.getByText('Add Blog');
+    const sendButton = screen.getByText('Add BlogDetailsPage');
 
     await user.type(titleInput, mockBlog.title);
     await user.type(authorInput, mockBlog.author);

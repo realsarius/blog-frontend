@@ -7,7 +7,7 @@ import Togglable from '../components/Togglable.jsx';
 import BlogForm from '../components/BlogForm.jsx';
 
 
-const Home = () => {
+const HomePage = () => {
     const dispatch = useDispatch();
 
     const blogs = useSelector((state) => state.blogs.blogs);
@@ -69,4 +69,4 @@ const Home = () => {
     );
 };
 
-export default Home;
+export default HomePage;
