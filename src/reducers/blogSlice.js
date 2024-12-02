@@ -6,6 +6,20 @@ export const fetchBlogs = createAsyncThunk('blogs/fetchBlogs', async () => {
     return blogs;
 });
 
+export const fetchBlogById = createAsyncThunk(
+    'blogs/fetchBlogById',
+    async (id, { rejectWithValue }) => {
+        try {
+            const blog = await blogService.getOne(id);
+            return blog;
+        } catch (error) {
+            return rejectWithValue(
+                error.response?.data?.error || error.message || 'Failed to fetch the blog',
+            );
+        }
+    },
+);
+
 export const createBlog = createAsyncThunk(
     'blogs/createBlog',
     async (blogObject) => {
@@ -19,7 +33,7 @@ export const updateBlogLikes = createAsyncThunk(
     async ({ id, likes }, { rejectWithValue }) => {
         try {
             const updatedBlog = await blogService.updateLikes(id, likes);
-            return { id: updatedBlog.id, likes: updatedBlog.likes };
+            return updatedBlog;
         } catch (error) {
             return rejectWithValue(
                 error.response?.data?.error || error.message || 'Failed to update likes',
@@ -40,10 +54,25 @@ export const removeBlog = createAsyncThunk(
     },
 );
 
+export const createComment = createAsyncThunk(
+    'blogs/createComment',
+    async ({ blogId, commentText }, { rejectWithValue }) => {
+        try {
+            const newComment = await blogService.createComment(blogId, commentText);
+            return newComment;
+        } catch (error) {
+            return rejectWithValue(
+                error.response?.data?.error || error.message || 'Failed to create comment',
+            );
+        }
+    },
+);
+
 const blogSlice = createSlice({
     name: 'blogs',
     initialState: {
         blogs: [],
+        selectedBlog: { comments: [] },
         status: 'idle',
         error: null,
     },
@@ -54,6 +83,7 @@ const blogSlice = createSlice({
     },
     extraReducers: (builder) => {
         builder
+            // fetch all blogs
             .addCase(fetchBlogs.pending, (state) => {
                 state.status = 'loading';
             })
@@ -65,6 +95,21 @@ const blogSlice = createSlice({
                 state.status = 'failed';
                 state.error = action.error.message;
             })
+
+            // fetch only one blog
+            .addCase(fetchBlogById.pending, (state) => {
+                state.status = 'loading';
+            })
+            .addCase(fetchBlogById.fulfilled, (state, action) => {
+                state.status = 'succeeded';
+                state.selectedBlog = action.payload;
+            })
+            .addCase(fetchBlogById.rejected, (state, action) => {
+                state.status = 'failed';
+                state.error = action.payload;
+            })
+
+            // create new blog
             .addCase(createBlog.fulfilled, (state, action) => {
                 state.status = 'succeeded';
                 state.blogs.push(action.payload);
@@ -73,19 +118,32 @@ const blogSlice = createSlice({
                 state.status = 'failed';
                 state.error = action.error.message;
             })
-            .addCase(updateBlogLikes.fulfilled, (state, action) => {
-                const blog = state.blogs.find((blog) => blog.id === action.payload.id);
-                if (blog) {
-                    blog.likes = action.payload.likes;
-                }
-            })
+
+            // remove blog
             .addCase(removeBlog.fulfilled, (state, action) => {
-                // Remove the blog from the state after successful deletion
                 state.blogs = state.blogs.filter((blog) => blog.id !== action.payload);
             })
             .addCase(removeBlog.rejected, (state, action) => {
                 state.error = action.payload;
+            })
+
+            // update likes on blog
+            .addCase(updateBlogLikes.fulfilled, (state, action) => {
+                if (state.selectedBlog?.id === action.payload.id) {
+                    state.selectedBlog.likes = action.payload.likes;
+                }
+
+                const index = state.blogs.findIndex(blog => blog.id === action.payload.id);
+                if (index !== -1) {
+                    state.blogs[index].likes = action.payload.likes;
+                }
+            })
+            .addCase(createComment.fulfilled, (state, action) => {
+                if (state.selectedBlog.id === action.payload.blogId) {
+                    state.selectedBlog.comments = [...state.selectedBlog.comments, action.payload];
+                }
             });
+
     },
 });
 

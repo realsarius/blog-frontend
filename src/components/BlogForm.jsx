@@ -50,25 +50,25 @@ const BlogForm = ({ blogFormRef }) => {
                     type="text"
                     value={title}
                     data-testid="blog-title"
-                    placeholder={'Blog Title'}
+                    placeholder={'BlogDetailsPage Title'}
                     onChange={(e) => setTitle(e.target.value)}
                     className="input input-bordered w-full"
                 />
             </div>
 
-            <div className="form-control">
-                <label className="label" htmlFor="author">
-                    <span className="label-text">Author</span>
-                </label>
-                <input
-                    id="author"
-                    type="text"
-                    value={author}
-                    data-testid="blog-author"
-                    onChange={(e) => setAuthor(e.target.value)}
-                    className="input input-bordered w-full"
-                />
-            </div>
+            {/*<div className="form-control">*/}
+            {/*    <label className="label" htmlFor="author">*/}
+            {/*        <span className="label-text">Author</span>*/}
+            {/*    </label>*/}
+            {/*    <input*/}
+            {/*        id="author"*/}
+            {/*        type="text"*/}
+            {/*        value={author}*/}
+            {/*        data-testid="blog-author"*/}
+            {/*        onChange={(e) => setAuthor(e.target.value)}*/}
+            {/*        className="input input-bordered w-full"*/}
+            {/*    />*/}
+            {/*</div>*/}
 
             <div className="form-control">
                 <label className="label" htmlFor="url">
